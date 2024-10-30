@@ -6,9 +6,7 @@
 
 #### 使用效果  
 
-<p align="center">
-  <video width="500" src="video-tiny.mp4" type="video/mp4"></video>
-</p>
+https://github.com/user-attachments/assets/77700aa2-294b-4dfe-8d6e-149197392a66  
 
 #### 其他  
 如果你喜欢这个项目的话，给个小星星(star)吧。  
