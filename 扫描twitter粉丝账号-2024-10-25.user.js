@@ -35,6 +35,38 @@ const checkCommentUrl = () => {
     return true
 }
 
+const checkEngagmentUrl = () => {
+    let url = window.location.href, paths = url.replace('https://', '').split('/')
+    if (!isTwitterUrl() || paths.length !== 5) {
+        return false
+    }
+    let pathname = paths.pop(), commentId = paths.pop()
+    if (!/^\d{15,20}$/.test(commentId) || !['quotes', 'retweets', 'likes'].includes(pathname)) {
+        return false
+    }
+    return true
+}
+
+const renderEngagementOptButton = () => {
+  let button = document.createElement('button')
+    button.setAttribute('id', 'achieve-engagement-btn')
+    button.setAttribute('type', 'button')
+    button.style.cssText = 'position: fixed;top: 60%;right:10px;z-index:99999999;width: 200px;height:50px;color:#fff;background-color:#03c068;font-size:16px;border-radius:6px;border:none;cursor:pointer;text-align: center;'
+    button.innerText = '提取engagement名单'
+    button.onclick = function() {
+        console.log('点击了提取')
+        if (!checkEngagmentUrl()) {
+            alert('提示：你当前没有在用户的engagement列表页面，操作取消')
+            return
+        }
+        queryDom()
+    }
+    if (!isTwitterUrl()) {
+        return false
+    }
+    document.body.appendChild(button)
+}
+
 const renderCommentOptButton = () => {
   let button = document.createElement('button')
     button.setAttribute('id', 'achieve-comments-btn')
@@ -81,6 +113,7 @@ const renderFollowerOptButton = () => {
     // Your code here...
     renderCommentOptButton()
     renderFollowerOptButton()
+    renderEngagementOptButton()
 })();
 
 const reportMyselfTwitterAccount = () => {
