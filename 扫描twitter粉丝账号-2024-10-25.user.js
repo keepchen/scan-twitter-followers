@@ -1,28 +1,15 @@
-// ==UserScript==
-// @name         扫描twitter粉丝账号
-// @namespace    https://x.com/intent/follow?screen_name=wowgogoing
-// @version      2024-10-25
-// @description  扫描follow页和评论页面的twitter账号，自动生成列表，并支持下载为csv。【免责声明】此脚本仅用于学习交流，请勿将其用于任何的违法用途。由此产生的争端及法律责任由使用者自行承担。
-// @author       wowgogoing
-// @match        http://x.com/*
-// @match        http://www.x.com/*
-// @match        https://x.com/*
-// @match        https://www.x.com/*
-// @icon         https://abs.twimg.com/responsive-web/client-web/icon-ios.77d25eba.png
-// @grant        unsafeWindow
-// @homepage     https://github.com/keepchen/scan-twitter-followers
-// ==/UserScript==
-
 const isTwitterUrl = () => {
     let hostname = window.location.hostname
     return ['x.com', 'www.x.com'].includes(hostname)
 }
 
+// Check if the current URL is a Twitter followers page
 const checkFollowersUrl = () => {
     let url = window.location.href
     return isTwitterUrl() && (url.endsWith('/followers') || url.endsWith('/verified_followers'))
 }
 
+// Check if the current URL is a Twitter comment page
 const checkCommentUrl = () => {
     let url = window.location.href, paths = url.replace('https://', '').split('/')
     if (!isTwitterUrl() || paths.length !== 4) {
@@ -35,7 +22,8 @@ const checkCommentUrl = () => {
     return true
 }
 
-const checkEngagmentUrl = () => {
+// Check if the current URL is a Twitter engagement page
+const checkEngagementUrl = () => {
     let url = window.location.href, paths = url.replace('https://', '').split('/')
     if (!isTwitterUrl() || paths.length !== 5) {
         return false
@@ -47,15 +35,16 @@ const checkEngagmentUrl = () => {
     return true
 }
 
+// Render the button for extracting engagement list
 const renderEngagementOptButton = () => {
-  let button = document.createElement('button')
+    let button = document.createElement('button')
     button.setAttribute('id', 'achieve-engagement-btn')
     button.setAttribute('type', 'button')
     button.style.cssText = 'position: fixed;top: 60%;right:10px;z-index:99999999;width: 200px;height:50px;color:#fff;background-color:#03c068;font-size:16px;border-radius:6px;border:none;cursor:pointer;text-align: center;'
     button.innerText = '提取engagement名单'
     button.onclick = function() {
         console.log('点击了提取')
-        if (!checkEngagmentUrl()) {
+        if (!checkEngagementUrl()) {
             alert('提示：你当前没有在用户的engagement列表页面，操作取消')
             return
         }
@@ -67,8 +56,9 @@ const renderEngagementOptButton = () => {
     document.body.appendChild(button)
 }
 
+// Render the button for extracting comment list
 const renderCommentOptButton = () => {
-  let button = document.createElement('button')
+    let button = document.createElement('button')
     button.setAttribute('id', 'achieve-comments-btn')
     button.setAttribute('type', 'button')
     button.style.cssText = 'position: fixed;top: 50%;right:10px;z-index:99999999;width: 200px;height:50px;color:#fff;background-color:#1d9bf0;font-size:16px;border-radius:6px;border:none;cursor:pointer;text-align: center;'
@@ -87,8 +77,9 @@ const renderCommentOptButton = () => {
     document.body.appendChild(button)
 }
 
+// Render the button for extracting followers list
 const renderFollowerOptButton = () => {
-  let button = document.createElement('button')
+    let button = document.createElement('button')
     button.setAttribute('id', 'achieve-followers-btn')
     button.setAttribute('type', 'button')
     button.style.cssText = 'position: fixed;top: 40%;right:10px;z-index:99999999;width: 200px;height:50px;color:#fff;background-color:#056b00;font-size:16px;border-radius:6px;border:none;cursor:pointer;text-align: center;'
@@ -107,15 +98,16 @@ const renderFollowerOptButton = () => {
     document.body.appendChild(button)
 }
 
+// Main function to initialize the script
 (function() {
     'use strict';
-     console.log("【扫描twitter粉丝账号脚本注册成功】\n%c【免责声明】此脚本仅用于学习交流，请勿将其用于任何的违法用途。由此产生的争端及法律责任由使用者自行承担。", 'background-color: #000;color:#ff0000;font-size:18px;')
-    // Your code here...
+    console.log("【扫描twitter粉丝账号脚本注册成功】\n%c【免责声明】此脚本仅用于学习交流，请勿将其用于任何的违法用途。由此产生的争端及法律责任由使用者自行承担。", 'background-color: #000;color:#ff0000;font-size:18px;')
     renderCommentOptButton()
     renderFollowerOptButton()
     renderEngagementOptButton()
 })();
 
+// Report the current Twitter account
 const reportMyselfTwitterAccount = () => {
     if (window.location.href.endsWith('/verified_followers')) {
         return window.location.href.replace('https://x.com/', '').replace('/verified_followers', '')
@@ -123,6 +115,7 @@ const reportMyselfTwitterAccount = () => {
     return window.location.href.replace('https://x.com/', '').replace('/followers', '')
 }
 
+// Query the DOM for the specified class name
 const queryDom = () => {
     let classname = prompt('请输入查询的类名称字符串，留空则使用默认类名称'), myselfAccount = reportMyselfTwitterAccount()
     if (classname === null) {
@@ -140,6 +133,7 @@ const queryDom = () => {
 
 let searchInterval = null
 
+// Render the table box for displaying the results
 const renderTableBox = (classname, myselfAccount) => {
     let oldBox = document.getElementById('achieve-result-__box')
     if (oldBox) {
@@ -151,7 +145,6 @@ const renderTableBox = (classname, myselfAccount) => {
     spanDom.style.cssText = 'width:100%;height:40px;background-color:#056b00;color:#fff;font-size:14px;text-align:center;display:inline-block;line-height:40px;'
     spanDom.innerText = '正在读取，你随时可以点击【下载csv】按钮进行下载保存'
     preDom.style.cssText = 'width: 96%;height: 540px;text-align: left;resize: none;overflow-y: scroll;background-color:#fff; padding: 8px;margin:0;border:none;'
-    //preDom.innerHTML = content.join("<br/>")
     closeButton.setAttribute('id', 'achieve-followers-btn')
     closeButton.setAttribute('type', 'button')
     closeButton.style.cssText = 'width: 80px;height:40px;margin-top:4px;color:#fff;background-color:#056b00;font-size:16px;border-radius:6px;border:none;cursor:pointer;text-align: center;'
@@ -194,17 +187,13 @@ const renderTableBox = (classname, myselfAccount) => {
                 continue
             }
             if (uniqueAccountList.includes(followerAccount)) {
-                //账号重复了，去重
                 continue
             }
             followers.push({account: followerAccount, profile: `https://x.com/${text.replace('@', '')}`})
         }
         console.log(`找到 ${myselfAccount} 的粉丝数：${followers.length}个，以下是粉丝名单`)
-        //console.table(followers)
-
         for (let i=0;i<followers.length;i++) {
             if (uniqueAccountList.includes(followers[i].account)) {
-                //账号重复了，去重
                 continue
             }
             uniqueAccountList.push(followers[i].account)
